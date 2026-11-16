@@ -1,0 +1,4 @@
+[build]
+  base = "next-pharmacy"
+  command = "npm run build"
+  publish = "out"

@@ -1,0 +1,9 @@
+{
+  "name": "pharmacy-elaf-launcher",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix next-pharmacy run dev -- --hostname 0.0.0.0",
+    "build": "npm --prefix next-pharmacy run build",
+    "lint": "npm --prefix next-pharmacy run lint"
+  }
+}
