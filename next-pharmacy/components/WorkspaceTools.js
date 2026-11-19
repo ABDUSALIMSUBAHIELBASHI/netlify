@@ -71,6 +71,7 @@ export function InventoryAdmin({ products, onAddProduct, onUpdateProduct, onDele
     event.preventDefault();
     const product = { ...draft, name: draft.name.trim(), price: Number(draft.price) };
     if (!product.name || !Number.isFinite(product.price) || product.price <= 0) return;
+    if (product.price > 1000 && !window.confirm(`The price is $${product.price.toFixed(2)}, above $1,000. Save it anyway?`)) return;
     if (editingId === null) onAddProduct(product);
     else onUpdateProduct(editingId, product);
     setDraft({ name: "", category: "Medicines", icon: "💊", price: "", description: "" });

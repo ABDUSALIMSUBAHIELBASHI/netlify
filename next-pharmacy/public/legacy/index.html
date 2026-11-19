@@ -206,6 +206,11 @@
     .durable-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(13,124,63,0.06); transform: translateY(-1px); }
     .durable-input::placeholder { color: #94a3b8; }
     [data-theme="dark"] .durable-input { background: #2d2d44; border-color: rgba(46,204,113,0.12); color: #e8e8f0; }
+    .product-icon-picker { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+    .product-icon-choice { min-width: 2.75rem; min-height: 2.75rem; border: 1px solid rgba(13,124,63,0.16); border-radius: 0.65rem; background: var(--white); font-size: 1.2rem; cursor: pointer; }
+    .product-icon-choice[aria-pressed="true"] { border-color: var(--primary); background: rgba(13,124,63,0.08); box-shadow: 0 0 0 2px rgba(13,124,63,0.08); }
+    .product-icon-choice:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .product-image-preview { max-width: 100%; max-height: 140px; margin-top: 0.5rem; border-radius: 0.65rem; object-fit: contain; }
 
     /* --- glass card --- */
     .glass-card {
@@ -810,25 +815,12 @@
       color: #94a3b8;
       font-size: 0.9rem;
     }
-    .google-search-wrapper .google-mic {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #94a3b8;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .google-search-wrapper .google-mic:hover { color: var(--primary); transform: translateY(-50%) scale(1.1); }
     .google-search-wrapper input {
-      padding-left: 2.5rem;
-      padding-right: 2.5rem;
       border-radius: 24px;
       border: 2px solid rgba(13,124,63,0.1);
       transition: all 0.4s ease;
       width: 100%;
-      padding: 0.65rem 2.5rem;
+      padding: 0.65rem 1rem 0.65rem 2.5rem;
       font-size: 0.875rem;
       background: var(--white);
       color: var(--dark);
@@ -947,7 +939,7 @@
       </div>
       <div class="mt-4 pt-4 border-t" style="border-color:rgba(13,124,63,0.06);">
         <div class="flex items-center justify-between mb-2"><span class="text-xs font-semibold text-slate-400"><i class="fas fa-history mr-1"></i> <span id="regHistoryTitle">Registration History</span></span><span class="text-xs text-slate-400" id="historyCountDisplay">0 entries</span></div>
-        <div class="table-wrap" style="max-height:160px;overflow-y:auto;"><div id="historyListContent" class="text-center py-4 text-sm text-slate-400"><i class="fas fa-history text-2xl block mb-2 opacity-30 atom-rotate"></i>No registration history</div></div>
+        <div class="table-wrap" style="max-height:280px;overflow-y:auto;"><div id="historyListContent" class="text-center py-4 text-sm text-slate-400"><i class="fas fa-history text-2xl block mb-2 opacity-30 atom-rotate"></i>No registration history</div></div>
       </div>
       <div class="text-center mt-3 text-[10px] text-slate-400 flex items-center justify-center gap-4">
         <span class="atom-pulse"><i class="fas fa-shield-alt mr-1 text-primary"></i> 256-bit Encrypted</span>
@@ -977,8 +969,8 @@
         <a href="#home" class="nav-link active" data-section="home"><i class="fas fa-home atom-pulse"></i> <span class="nav-label">Home</span></a>
         <a href="#dash" class="nav-link" data-section="dash"><i class="fas fa-chart-pie atom-pulse"></i> <span class="nav-label">Dashboard</span></a>
         <a href="#shop" class="nav-link" data-section="shop"><i class="fas fa-store"></i> <span class="nav-label">Shop</span></a>
-        <a href="#calculator" class="nav-link" data-section="calculator"><i class="fas fa-calculator"></i> <span class="nav-label">Calculator</span></a>
         <a href="#team" class="nav-link" data-section="team"><i class="fas fa-users"></i> <span class="nav-label">Team</span></a>
+        <a href="/chat" target="_top" class="nav-link"><i class="fas fa-comments"></i> <span class="nav-label">Chat</span></a>
         <a href="#sheets" class="nav-link" data-section="sheets"><i class="fas fa-table"></i> <span class="nav-label">Sheets</span></a>
         <a href="#admin" class="nav-link" data-section="admin"><i class="fas fa-user-shield atom-glow-text"></i> <span class="nav-label">Admin</span></a>
         <a href="#profile" class="nav-link" data-section="profile"><i class="fas fa-user"></i> <span class="nav-label">Profile</span></a>
@@ -1021,8 +1013,8 @@
         <a href="#home" data-section="home"><i class="fas fa-home atom-pulse"></i> Home</a>
         <a href="#dash" data-section="dash"><i class="fas fa-chart-pie atom-pulse"></i> Dashboard</a>
         <a href="#shop" data-section="shop"><i class="fas fa-store"></i> Shop</a>
-        <a href="#calculator" data-section="calculator"><i class="fas fa-calculator"></i> Calculator</a>
         <a href="#team" data-section="team"><i class="fas fa-users"></i> Team</a>
+        <a href="/chat" target="_top"><i class="fas fa-comments"></i> Chat</a>
         <a href="#sheets" data-section="sheets"><i class="fas fa-table"></i> Sheets</a>
         <a href="#admin" data-section="admin"><i class="fas fa-user-shield atom-glow-text"></i> Admin</a>
         <a href="#profile" data-section="profile"><i class="fas fa-user"></i> Profile</a>
@@ -1243,50 +1235,10 @@
         <div class="google-search-wrapper">
           <span class="google-icon"><i class="fas fa-search"></i></span>
           <input id="searchInput" type="search" placeholder="Search products... Google Search" />
-          <span class="google-mic" onclick="showToast('🎤 Voice search coming soon!', 'info')"><i class="fas fa-microphone"></i></span>
         </div>
         <div class="flex flex-wrap gap-1 w-full md:w-auto"><button class="filter-btn active" data-category="all">All</button><button class="filter-btn" data-category="medicines">💊 Med</button><button class="filter-btn" data-category="supplements">🧪 Supp</button><button class="filter-btn" data-category="wellness">🌿 Well</button><button class="filter-btn" data-category="personal">🧴 Pers</button></div>
       </div>
       <div id="productsGrid" class="product-grid"></div>
-      <section id="calculator" class="mt-4 p-4 rounded-2xl durable-card" aria-labelledby="calculatorTitle">
-        <div class="calculator-heading">
-          <span class="calculator-heading-icon"><i class="fas fa-calculator" aria-hidden="true"></i></span>
-          <div class="calculator-heading-copy">
-            <h3 id="calculatorTitle">Basic Calculator</h3>
-            <p>Quick calculations</p>
-          </div>
-          <span class="calculator-ready">Ready</span>
-        </div>
-        <div class="calculator-screen">
-          <output id="calculatorExpression" aria-live="polite" aria-label="Calculation"></output>
-          <output id="calculatorDisplay" aria-live="polite" aria-label="Calculator display" tabindex="0">0</output>
-        </div>
-        <div id="calculatorKeys" class="grid grid-cols-4 gap-2" role="group" aria-label="Calculator keys">
-          <button type="button" class="calculator-key calculator-key-clear" data-calc-action="clear">AC</button>
-          <button type="button" class="calculator-key" data-calc-action="backspace" aria-label="Backspace">⌫</button>
-          <button type="button" class="calculator-key calculator-key-operator" data-calc-operation="/" aria-label="Divide">÷</button>
-          <button type="button" class="calculator-key calculator-key-operator" data-calc-operation="*" aria-label="Multiply">×</button>
-          <button type="button" class="calculator-key" data-calc-digit="7">7</button>
-          <button type="button" class="calculator-key" data-calc-digit="8">8</button>
-          <button type="button" class="calculator-key" data-calc-digit="9">9</button>
-          <button type="button" class="calculator-key calculator-key-operator" data-calc-operation="-" aria-label="Subtract">−</button>
-          <button type="button" class="calculator-key" data-calc-digit="4">4</button>
-          <button type="button" class="calculator-key" data-calc-digit="5">5</button>
-          <button type="button" class="calculator-key" data-calc-digit="6">6</button>
-          <button type="button" class="calculator-key calculator-key-operator" data-calc-operation="+" aria-label="Add">+</button>
-          <button type="button" class="calculator-key" data-calc-digit="1">1</button>
-          <button type="button" class="calculator-key" data-calc-digit="2">2</button>
-          <button type="button" class="calculator-key" data-calc-digit="3">3</button>
-          <button type="button" class="calculator-key calculator-key-equals" data-calc-action="equals" aria-label="Equals">=</button>
-          <button type="button" class="calculator-key col-span-2" data-calc-digit="0">0</button>
-          <button type="button" class="calculator-key" data-calc-digit=".">.</button>
-          <span aria-hidden="true"></span>
-        </div>
-        <div class="calculator-footer">
-          <span><i class="fas fa-keyboard mr-1" aria-hidden="true"></i>Keyboard enabled</span>
-          <span>Enter = &nbsp;·&nbsp; Esc AC</span>
-        </div>
-      </section>
     </div>
 
     <!-- ===== TEAM ===== -->
@@ -1350,9 +1302,9 @@
       <div class="flex flex-wrap gap-1 mb-3"><button class="tab-btn active" data-tab="products">📦 Products</button><button class="tab-btn" data-tab="orders">📋 Orders</button><button class="tab-btn" data-tab="users">👥 Users</button><button class="tab-btn" data-tab="add">➕ Add Product</button><button class="tab-btn" data-tab="resign">🚫 Resign</button></div>
       <div id="adminContent">
         <div id="adminProductsTab" class="tab-content"><div class="table-wrap"><table><thead><tr><th>Image</th><th>Product</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead><tbody id="adminProductsTable"></tbody></table></div></div>
-        <div id="adminOrdersTab" class="tab-content hidden"><div class="table-wrap"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th></tr></thead><tbody id="adminOrdersTable"></tbody></table></div></div>
+        <div id="adminOrdersTab" class="tab-content hidden"><div class="flex flex-wrap items-center justify-between gap-2 mb-2"><p class="text-xs text-slate-400">Orders are saved on this device. Configure Google Sheets in the dashboard to sync them.</p><button id="exportOrdersBtn" type="button" class="durable-btn durable-btn-outline btn-sm"><i class="fas fa-file-export mr-1"></i> Export all orders</button></div><div class="table-wrap"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th></tr></thead><tbody id="adminOrdersTable"></tbody></table></div></div>
         <div id="adminUsersTab" class="tab-content hidden"><div class="table-wrap"><table><thead><tr><th>Avatar</th><th>User</th><th>Email</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead><tbody id="adminUsersTable"></tbody></table></div></div>
-        <div id="adminAddTab" class="tab-content hidden"><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="input-label">Name</label><input id="addProdName" type="text" placeholder="Product Name" class="durable-input" /></div><div><label class="input-label">Category</label><select id="addProdCategory" class="durable-input"><option value="medicines">💊 Medicines</option><option value="supplements">🧪 Supplements</option><option value="wellness">🌿 Wellness</option><option value="personal">🧴 Personal</option></select></div><div><label class="input-label">Price ($)</label><input id="addProdPrice" type="number" placeholder="19.99" class="durable-input" step="0.01" /></div><div><label class="input-label">Icon</label><input id="addProdIcon" type="text" placeholder="💊" class="durable-input" /></div><div><label class="input-label">Badge</label><input id="addProdBadge" type="text" placeholder="New" class="durable-input" /></div><div><label class="input-label">Description</label><input id="addProdDesc" type="text" placeholder="Description" class="durable-input" /></div><div class="col-span-full"><label class="input-label">Image URL</label><input id="addProdImage" type="url" placeholder="https://example.com/image.jpg" class="durable-input" /></div><button id="addProdBtn" class="durable-btn durable-btn-primary col-span-full atom-pulse"><i class="fas fa-plus mr-2"></i> Add Product</button></div></div>
+        <div id="adminAddTab" class="tab-content hidden"><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="input-label" for="addProdName">Name</label><input id="addProdName" type="text" placeholder="Product Name" class="durable-input" /></div><div><label class="input-label" for="addProdCategory">Category</label><select id="addProdCategory" class="durable-input"><option value="medicines">💊 Medicines</option><option value="supplements">🧪 Supplements</option><option value="wellness">🌿 Wellness</option><option value="personal">🧴 Personal</option></select></div><div><label class="input-label" for="addProdPrice">Price ($)</label><input id="addProdPrice" type="number" placeholder="19.99" class="durable-input" step="0.01" /></div><div><label class="input-label" for="addProdIcon">Icon</label><input id="addProdIcon" type="text" value="💊" placeholder="💊" class="durable-input" maxlength="8" aria-describedby="addProdIconOptions" /><div id="addProdIconOptions" class="product-icon-picker" role="group" aria-label="Choose a product icon"><button class="product-icon-choice" type="button" data-product-icon="💊" aria-label="Choose pill icon" aria-pressed="true">💊</button><button class="product-icon-choice" type="button" data-product-icon="🧪" aria-label="Choose test tube icon" aria-pressed="false">🧪</button><button class="product-icon-choice" type="button" data-product-icon="🌿" aria-label="Choose herb icon" aria-pressed="false">🌿</button><button class="product-icon-choice" type="button" data-product-icon="🧴" aria-label="Choose lotion bottle icon" aria-pressed="false">🧴</button><button class="product-icon-choice" type="button" data-product-icon="🩹" aria-label="Choose bandage icon" aria-pressed="false">🩹</button><button class="product-icon-choice" type="button" data-product-icon="🩺" aria-label="Choose stethoscope icon" aria-pressed="false">🩺</button><button class="product-icon-choice" type="button" data-product-icon="🧼" aria-label="Choose soap icon" aria-pressed="false">🧼</button><button class="product-icon-choice" type="button" data-product-icon="💧" aria-label="Choose water drop icon" aria-pressed="false">💧</button></div></div><div><label class="input-label" for="addProdBadge">Badge</label><input id="addProdBadge" type="text" placeholder="New" class="durable-input" /></div><div><label class="input-label" for="addProdDesc">Description</label><input id="addProdDesc" type="text" placeholder="Description" class="durable-input" /></div><div class="col-span-full"><label class="input-label" for="addProdImage">Image URL (optional)</label><input id="addProdImage" type="url" placeholder="https://example.com/image.jpg" class="durable-input" /><label class="input-label mt-2" for="addProdImageFile">Or choose a product image from this device</label><input id="addProdImageFile" type="file" accept="image/*" class="durable-input" aria-describedby="addProdImageHelp" /><small id="addProdImageHelp" class="block mt-1 text-slate-400">Choose a photo from your computer or phone. Images are resized before saving.</small><img id="addProdImagePreview" class="product-image-preview" alt="Selected product image preview" hidden /></div><button id="addProdBtn" class="durable-btn durable-btn-primary col-span-full atom-pulse"><i class="fas fa-plus mr-2"></i> Add Product</button></div></div>
         <div id="adminResignTab" class="tab-content hidden"><div class="flex items-center justify-between mb-2"><span class="text-xs text-slate-400"><i class="fas fa-user-slash mr-1"></i> Resigned Users</span><button onclick="openAddResignModal()" class="durable-btn durable-btn-primary btn-sm atom-pulse"><i class="fas fa-plus mr-1"></i> Add</button></div><div class="table-wrap"><table><thead><tr><th>Email</th><th>Reason</th><th>Date</th><th>Actions</th></tr></thead><tbody id="adminResignTable"></tbody></table></div></div>
       </div>
     </div>
@@ -2122,7 +2074,7 @@
         if (!tbody) return;
         if (history.length === 0) { tbody.innerHTML =
             `<tr><td colspan="4" class="text-center py-4 text-slate-400 text-sm">No history records</td></tr>`; return; }
-        tbody.innerHTML = history.slice(0, 50).map(h => `
+        tbody.innerHTML = history.map(h => `
           <tr>
             <td class="font-semibold atom-glow-text">${h.id}</td>
             <td>${h.email || 'N/A'}</td>
@@ -2138,7 +2090,7 @@
             listContent.innerHTML =
               `<div class="text-center py-4 text-sm text-slate-400"><i class="fas fa-history text-2xl block mb-2 opacity-30 atom-rotate"></i>No registration history</div>`;
           } else {
-            listContent.innerHTML = history.slice(0, 5).map(h => `
+            listContent.innerHTML = history.map(h => `
               <div class="flex items-center justify-between py-1 px-2 border-b" style="border-color:rgba(13,124,63,0.04);">
                 <span class="text-xs">${h.email || 'N/A'} - <span class="atom-pulse">${h.action || 'REGISTERED'}</span></span>
                 <span class="text-xs text-slate-400">${h.timestamp ? new Date(h.timestamp).toLocaleDateString() : ''}</span>
@@ -2742,6 +2694,55 @@
       ];
       let products = [];
       let prodId = 1;
+      function resizeProductImage(file) {
+        return new Promise((resolve, reject) => {
+          if (!file.type.startsWith('image/')) {
+            reject(new Error('Choose an image file.'));
+            return;
+          }
+          if (file.size > 10 * 1024 * 1024) {
+            reject(new Error('Choose an image smaller than 10 MB.'));
+            return;
+          }
+          const objectUrl = URL.createObjectURL(file);
+          const image = new Image();
+          image.onload = function() {
+            try {
+              const maxDimension = 1000;
+              const scale = Math.min(1, maxDimension / Math.max(image.naturalWidth, image.naturalHeight));
+              const canvas = document.createElement('canvas');
+              canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+              canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+              const context = canvas.getContext('2d');
+              if (!context) throw new Error('This browser cannot process the selected image.');
+              context.fillStyle = '#fff';
+              context.fillRect(0, 0, canvas.width, canvas.height);
+              context.drawImage(image, 0, 0, canvas.width, canvas.height);
+              resolve(canvas.toDataURL('image/jpeg', 0.8));
+            } catch (error) {
+              reject(error);
+            } finally {
+              URL.revokeObjectURL(objectUrl);
+            }
+          };
+          image.onerror = function() {
+            URL.revokeObjectURL(objectUrl);
+            reject(new Error('This image could not be opened. Try a JPG, PNG, or WebP image.'));
+          };
+          image.src = objectUrl;
+        });
+      }
+
+      function saveProducts(nextProducts) {
+        try {
+          localStorage.setItem('pharmacy_products', JSON.stringify(nextProducts));
+          return true;
+        } catch (error) {
+          console.error('Unable to save pharmacy products on this device.', error);
+          showToast('Unable to save products. The device storage may be full; try a smaller image.', 'error');
+          return false;
+        }
+      }
 
       function defaultProducts() {
         const names = ['Paracetamol 500mg', 'Ibuprofen 400mg', 'Amoxicillin 500mg', 'Omeprazole 20mg',
@@ -2769,12 +2770,35 @@
         });
       }
       defaultProducts();
+      try {
+        const savedProducts = localStorage.getItem('pharmacy_products');
+        if (savedProducts !== null) {
+          const parsedProducts = JSON.parse(savedProducts);
+          if (!Array.isArray(parsedProducts)) throw new Error('Saved product data is not a list.');
+          products = parsedProducts;
+          prodId = Math.max(0, ...products.map(product => Number(product.id) || 0)) + 1;
+        }
+      } catch (error) {
+        console.error('Unable to load saved pharmacy products.', error);
+        showToast('Saved product details could not be loaded. Showing the default products.', 'error');
+      }
 
       // ============================================================
       // ORDERS
       // ============================================================
       let orders = [{ id: 1, customer: 'John Doe', items: 3, total: 67.97, status: 'Completed' }, { id: 2,
         customer: 'Jane Smith', items: 2, total: 43.98, status: 'Pending' }];
+      try {
+        const savedOrders = localStorage.getItem('pharmacy_order_records');
+        if (savedOrders !== null) {
+          const parsedOrders = JSON.parse(savedOrders);
+          if (!Array.isArray(parsedOrders)) throw new Error('Saved order data is not a list.');
+          orders = parsedOrders;
+        }
+      } catch (error) {
+        console.error('Unable to load saved pharmacy orders.', error);
+        showToast('Saved orders could not be loaded. Showing sample orders.', 'error');
+      }
       window.getPharmacySheetInventory = function() {
         return products.map(p => ({ id: p.id, name: p.name, category: p.category, price: p.price,
           status: 'In Stock' }));
@@ -2988,6 +3012,36 @@
             if (status) status.classList.add('hidden'); }, 3000);
         });
       }
+      const exportOrdersBtn = document.getElementById('exportOrdersBtn');
+      if (exportOrdersBtn) {
+        exportOrdersBtn.addEventListener('click', function() {
+          let storedOrders;
+          try {
+            storedOrders = JSON.parse(localStorage.getItem('pharmacy_order_records') || '[]');
+            if (!Array.isArray(storedOrders)) throw new Error('Saved order data is not a list.');
+          } catch (error) {
+            console.error('Unable to export pharmacy orders.', error);
+            showToast('Orders could not be exported. Check the saved order data and try again.', 'error');
+            return;
+          }
+          if (storedOrders.length === 0) {
+            showToast('There are no submitted orders to export.', 'info');
+            return;
+          }
+          try {
+            const blob = new Blob([JSON.stringify(storedOrders, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'pharmacy-elaf-orders.json';
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(url), 500);
+          } catch (error) {
+            console.error('Unable to download the pharmacy order export.', error);
+            showToast('The order export could not be downloaded.', 'error');
+          }
+        });
+      }
 
       // ============================================================
       // SHARE & COMMENTS
@@ -3135,6 +3189,10 @@
       // ============================================================
       // PRODUCT CRUD
       // ============================================================
+      function confirmHighProductPrice(price) {
+        return price <= 1000 || window.confirm(`The price is $${price.toFixed(2)}, above $1,000. Save it anyway?`);
+      }
+
       window.editProduct = function(id) {
         const p = products.find(x => x.id === id);
         if (!p) return;
@@ -3150,19 +3208,24 @@
               .description || '' }, { key: 'image', label: 'Image URL', value: p.image || '' }],
           onConfirm: function(data) {
             const prod = products.find(x => x.id === id);
-            if (prod) { prod.name = data.name;
-              prod.category = data.category;
-              prod.price = parseFloat(data.price) || 0;
-              prod.icon = data.icon || '💊';
-              prod.badge = data.badge || 'New';
-              prod.description = data.description || 'New product';
-              prod.image = data.image ||
-                'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=150&fit=crop';
-              renderProducts(currentCategory, searchQuery);
-              updateAdminStats();
-              showSuccessToast('✅ Product Updated!', [{ icon: 'edit', text: prod.name }]);
-              addInbox('system', `📦 Product Updated: ${prod.name}`, `${prod.name} updated. Price: $${prod.price.toFixed(2)}`,
-                'System'); }
+            if (!prod) return;
+            const price = Number(data.price);
+            if (!Number.isFinite(price) || price <= 0) {
+              showToast('Enter a valid product price greater than zero.', 'error');
+              return;
+            }
+            if (!confirmHighProductPrice(price)) return;
+            const updatedProduct = { ...prod, name: data.name, category: data.category, price,
+              icon: data.icon || '💊', badge: data.badge || 'New', description: data.description || 'New product',
+              image: data.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=150&fit=crop' };
+            const updatedProducts = products.map(product => product.id === id ? updatedProduct : product);
+            if (!saveProducts(updatedProducts)) return;
+            products = updatedProducts;
+            renderProducts(currentCategory, searchQuery);
+            updateAdminStats();
+            showSuccessToast('✅ Product Updated!', [{ icon: 'edit', text: updatedProduct.name }]);
+            addInbox('system', `📦 Product Updated: ${updatedProduct.name}`, `${updatedProduct.name} updated. Price: $${updatedProduct.price.toFixed(2)}`,
+              'System');
           } });
       };
 
@@ -3170,7 +3233,9 @@
         const p = products.find(x => x.id === id);
         if (!p) return;
         openDeleteConfirm('Delete Product', `Delete "${p.name}"?`, () => {
-          products = products.filter(x => x.id !== id);
+          const updatedProducts = products.filter(x => x.id !== id);
+          if (!saveProducts(updatedProducts)) return;
+          products = updatedProducts;
           renderProducts(currentCategory, searchQuery);
           updateAdminStats();
           showSuccessToast('🗑️ Product Deleted', [{ icon: 'trash', text: p.name }]);
@@ -3178,40 +3243,111 @@
         });
       };
 
+      const addProdIconInput = document.getElementById('addProdIcon');
+      const productIconChoices = document.querySelectorAll('[data-product-icon]');
+      function selectAddProductIcon(value) {
+        if (addProdIconInput) addProdIconInput.value = value;
+        productIconChoices.forEach(function(button) {
+          button.setAttribute('aria-pressed', String(button.dataset.productIcon === value));
+        });
+      }
+      productIconChoices.forEach(function(button) {
+        button.addEventListener('click', function() { selectAddProductIcon(button.dataset.productIcon); });
+      });
+      if (addProdIconInput) {
+        addProdIconInput.addEventListener('input', function() {
+          productIconChoices.forEach(function(button) {
+            button.setAttribute('aria-pressed', String(button.dataset.productIcon === addProdIconInput.value));
+          });
+        });
+      }
+
       const addProdBtn = document.getElementById('addProdBtn');
+      const productImageFileInput = document.getElementById('addProdImageFile');
+      const productImagePreview = document.getElementById('addProdImagePreview');
+      const productImageUrlInput = document.getElementById('addProdImage');
+      let selectedProductImage = '';
+      if (productImageFileInput) {
+        productImageFileInput.addEventListener('change', async function() {
+          const file = productImageFileInput.files && productImageFileInput.files[0];
+          selectedProductImage = '';
+          if (productImagePreview) productImagePreview.hidden = true;
+          if (!file) return;
+          if (addProdBtn) addProdBtn.disabled = true;
+          productImageFileInput.disabled = true;
+          if (productImageUrlInput) productImageUrlInput.disabled = true;
+          try {
+            selectedProductImage = await resizeProductImage(file);
+            if (productImagePreview) {
+              productImagePreview.src = selectedProductImage;
+              productImagePreview.hidden = false;
+            }
+            if (productImageUrlInput) productImageUrlInput.value = '';
+          } catch (error) {
+            console.error('Unable to prepare the selected product image.', error);
+            productImageFileInput.value = '';
+            showToast(error.message || 'Unable to use this image.', 'error');
+          } finally {
+            if (addProdBtn) addProdBtn.disabled = false;
+            productImageFileInput.disabled = false;
+            if (productImageUrlInput) productImageUrlInput.disabled = false;
+          }
+        });
+      }
+      if (productImageUrlInput) {
+        productImageUrlInput.addEventListener('input', function() {
+          if (!productImageUrlInput.value.trim()) return;
+          selectedProductImage = '';
+          if (productImageFileInput) productImageFileInput.value = '';
+          if (productImagePreview) productImagePreview.hidden = true;
+        });
+      }
       if (addProdBtn) {
         addProdBtn.addEventListener('click', function() {
           const name = document.getElementById('addProdName');
           const cat = document.getElementById('addProdCategory');
           const price = document.getElementById('addProdPrice');
-          const icon = document.getElementById('addProdIcon');
+          const icon = addProdIconInput;
           const badge = document.getElementById('addProdBadge');
           const desc = document.getElementById('addProdDesc');
-          const image = document.getElementById('addProdImage');
           const nameVal = name ? name.value.trim() : '';
           const catVal = cat ? cat.value : 'medicines';
           const priceVal = price ? parseFloat(price.value) : 0;
           const iconVal = icon ? icon.value.trim() : '💊';
           const badgeVal = badge ? badge.value.trim() : 'New';
           const descVal = desc ? desc.value.trim() : 'New product';
-          const imageVal = image ? image.value.trim() : '';
-          if (!nameVal || isNaN(priceVal) || priceVal <= 0) { showToast('❌ Fill all required fields.', 'error'); return; }
-          const newP = { id: prodId++, name: nameVal, category: catVal, price: priceVal, icon: iconVal || '💊', badge: badgeVal || 'New',
-            description: descVal || 'New product', image: imageVal ||
-              'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=150&fit=crop',
-            accentColor: '#0d7c3f' };
-          products.push(newP);
-          renderProducts(currentCategory, searchQuery);
-          updateAdminStats();
-          if (name) name.value = '';
-          if (price) price.value = '';
-          if (icon) icon.value = '';
-          if (badge) badge.value = '';
-          if (desc) desc.value = '';
-          if (image) image.value = '';
-          showSuccessToast('✅ Product Added 2026!', [{ icon: 'plus-circle atom-pulse', text: nameVal }, { icon: 'tag',
-            text: `$${priceVal.toFixed(2)}` }]);
-          addInbox('system', `📦 New Product: ${nameVal}`, `${nameVal} added. Price: $${priceVal.toFixed(2)}`, 'System');
+          if (!nameVal || !Number.isFinite(priceVal) || priceVal <= 0) { showToast('❌ Fill all required fields with a valid price.', 'error'); return; }
+          if (!confirmHighProductPrice(priceVal)) return;
+          addProdBtn.disabled = true;
+          try {
+            const newP = { id: prodId, name: nameVal, category: catVal, price: priceVal, icon: iconVal || '💊', badge: badgeVal || 'New',
+              description: descVal || 'New product', image: selectedProductImage || (productImageUrlInput && productImageUrlInput.value.trim()) ||
+                'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=150&fit=crop',
+              accentColor: '#0d7c3f' };
+            const updatedProducts = [...products, newP];
+            if (!saveProducts(updatedProducts)) return;
+            products = updatedProducts;
+            prodId += 1;
+            renderProducts(currentCategory, searchQuery);
+            updateAdminStats();
+            if (name) name.value = '';
+            if (price) price.value = '';
+            selectAddProductIcon('💊');
+            if (badge) badge.value = '';
+            if (desc) desc.value = '';
+            if (productImageUrlInput) productImageUrlInput.value = '';
+            if (productImageFileInput) productImageFileInput.value = '';
+            selectedProductImage = '';
+            if (productImagePreview) {
+              productImagePreview.removeAttribute('src');
+              productImagePreview.hidden = true;
+            }
+            showSuccessToast('✅ Product Added 2026!', [{ icon: 'plus-circle atom-pulse', text: nameVal }, { icon: 'tag',
+              text: `$${priceVal.toFixed(2)}` }]);
+            addInbox('system', `📦 New Product: ${nameVal}`, `${nameVal} added. Price: $${priceVal.toFixed(2)}`, 'System');
+          } finally {
+            addProdBtn.disabled = false;
+          }
         });
       }
 
