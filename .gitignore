@@ -1,1 +1,7 @@
 /netlify-dist/
+**/node_modules/
+**/.next/
+**/.next-chat-dev/
+**/.env
+**/.env.*
+!**/.env.example
