@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "npm --prefix next-pharmacy run dev -- --hostname 0.0.0.0",
     "build": "npm --prefix next-pharmacy run build",
-    "lint": "npm --prefix next-pharmacy run lint"
+    "lint": "npm --prefix next-pharmacy run lint",
+    "build:netlify": "node scripts/build-netlify.js"
   }
 }

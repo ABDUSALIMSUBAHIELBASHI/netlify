@@ -1,4 +1,3 @@
 [build]
-  base = "next-pharmacy"
-  command = "npm run build"
-  publish = "out"
+  command = "npm run build:netlify"
+  publish = "netlify-dist"
