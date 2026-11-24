@@ -159,6 +159,7 @@ export default function PharmacyApp() {
           <a href="#team">Team</a>
           <a href="#sheets">Sheets Manager</a>
           <a href="#history">History</a>
+          <a href="/chat">Chat</a>
         </nav>
         <div className="header-actions">
           <button className="theme-button" type="button" onClick={() => setTheme((current) => current === "light" ? "dark" : "light")} aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}>

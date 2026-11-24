@@ -979,6 +979,7 @@
         <a href="#shop" class="nav-link" data-section="shop"><i class="fas fa-store"></i> <span class="nav-label">Shop</span></a>
         <a href="#calculator" class="nav-link" data-section="calculator"><i class="fas fa-calculator"></i> <span class="nav-label">Calculator</span></a>
         <a href="#team" class="nav-link" data-section="team"><i class="fas fa-users"></i> <span class="nav-label">Team</span></a>
+        <a href="/chat" target="_top" class="nav-link"><i class="fas fa-comments"></i> <span class="nav-label">Chat</span></a>
         <a href="#sheets" class="nav-link" data-section="sheets"><i class="fas fa-table"></i> <span class="nav-label">Sheets</span></a>
         <a href="#admin" class="nav-link" data-section="admin"><i class="fas fa-user-shield atom-glow-text"></i> <span class="nav-label">Admin</span></a>
         <a href="#profile" class="nav-link" data-section="profile"><i class="fas fa-user"></i> <span class="nav-label">Profile</span></a>
@@ -1023,6 +1024,7 @@
         <a href="#shop" data-section="shop"><i class="fas fa-store"></i> Shop</a>
         <a href="#calculator" data-section="calculator"><i class="fas fa-calculator"></i> Calculator</a>
         <a href="#team" data-section="team"><i class="fas fa-users"></i> Team</a>
+        <a href="/chat" target="_top"><i class="fas fa-comments"></i> Chat</a>
         <a href="#sheets" data-section="sheets"><i class="fas fa-table"></i> Sheets</a>
         <a href="#admin" data-section="admin"><i class="fas fa-user-shield atom-glow-text"></i> Admin</a>
         <a href="#profile" data-section="profile"><i class="fas fa-user"></i> Profile</a>
@@ -3619,8 +3621,10 @@
       window.navigateTo = navigateTo;
 
       document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', function(e) { e.preventDefault(); const target = this.getAttribute(
-            'href'); if (target) navigateTo(target);
+        link.addEventListener('click', function(e) { const target = this.getAttribute('href');
+          if (!target || !target.startsWith('#')) return;
+          e.preventDefault();
+          navigateTo(target);
           document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
           this.classList.add('active'); });
       });

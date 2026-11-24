@@ -1172,7 +1172,8 @@
       <div id="authSuccessMsg" class="hidden atom-border-glow" style="background:rgba(13,124,63,0.04);border-radius:var(--radius-md);padding:0.6rem;text-align:center;animation:fadeUp 0.4s ease;"><span style="font-size:1.6rem;color:var(--primary);display:block;margin-bottom:0.1rem;">✅</span><p class="font-semibold text-primary text-sm" id="authSuccessText">Account created successfully!</p><p class="text-xs text-slate-400 mt-1" id="authSuccessSubtext">Please log in to continue.</p></div>
       <div class="flex items-center justify-between py-2"><span class="h-px flex-1 bg-slate-200 dark:bg-slate-700"></span><span class="mx-2 text-xs uppercase tracking-[0.2em] text-slate-400" id="orText">or</span><span class="h-px flex-1 bg-slate-200 dark:bg-slate-700"></span></div>
       <div class="space-y-3">
-        <div class="relative"><i class="fas fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 z-10"></i><input id="authContact" type="text" placeholder="Email / username" class="durable-input pl-9" /></div>
+        <div id="authNameField" class="relative"><i class="fas fa-user absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 z-10"></i><input id="authName" type="text" placeholder="Full name" autocomplete="name" class="durable-input pl-9" /></div>
+        <div class="relative"><i class="fas fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 z-10"></i><input id="authContact" type="email" placeholder="Email address" autocomplete="email" class="durable-input pl-9" /></div>
         <div class="relative"><i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 z-10"></i><input id="authPassword" type="password" placeholder="Password" class="durable-input pl-9 pr-12" /><button type="button" class="toggle-pass" onclick="toggleAuthPass()" aria-label="Toggle password"><span class="eye-icon">👁️‍🗨️</span></button></div>
         <div id="authPwdStrength" style="height:4px;border-radius:4px;margin-top:4px;transition:all 0.3s ease;background:rgba(13,124,63,0.06);"></div>
         <div class="flex items-center justify-between text-xs text-slate-500"><button id="otpBtn" type="button" class="font-semibold hover:text-primary transition atom-pulse">Continue with OTP</button><button id="forgotPwdLink" type="button" class="font-semibold text-primary hover:text-primary transition">Forgot password?</button></div>
@@ -1345,10 +1346,10 @@
       </div>
       <div class="bg-primary-light rounded-xl p-3 mb-3 atom-border-glow"><table class="w-full text-sm"><tr><td class="py-1 font-semibold text-slate-400 text-xs uppercase w-2/5">Email</td><td class="py-1" id="displayEmail">user@example.com</td></tr><tr><td class="py-1 font-semibold text-slate-400 text-xs uppercase">Status</td><td class="py-1"><span class="durable-badge durable-badge-success atom-pulse">Active</span></td></tr><tr><td class="py-1 font-semibold text-slate-400 text-xs uppercase">Member Since</td><td class="py-1" id="displayMemberSince">January 2024</td></tr></table></div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-        <div><label class="input-label">Email</label><input type="email" id="profileEmailInput" value="user@example.com" class="durable-input" /></div>
+        <div><label class="input-label">Account email</label><input type="email" id="profileEmailInput" value="user@example.com" class="durable-input" readonly /></div>
         <div><label class="input-label">Member Since</label><input type="text" id="profileMemberSince" value="January 2024" class="durable-input" /></div>
       </div>
-      <div class="flex flex-col gap-2 mt-3"><button onclick="updateProfile()" class="durable-btn durable-btn-primary btn-block atom-pulse"><i class="fas fa-save mr-2"></i> <span id="updateProfileBtn">Update Profile</span></button><button onclick="deleteProfile()" class="durable-btn durable-btn-danger btn-block"><i class="fas fa-trash-alt mr-2"></i> <span id="deleteProfileBtn">Delete Account</span></button></div>
+      <div class="flex flex-col gap-2 mt-3"><button onclick="updateProfile()" class="durable-btn durable-btn-primary btn-block atom-pulse"><i class="fas fa-save mr-2"></i> <span id="updateProfileBtn">Update Profile</span></button><button onclick="deleteProfile()" class="durable-btn durable-btn-danger btn-block"><i class="fas fa-trash-alt mr-2"></i> <span id="deleteProfileBtn">Remove Local Profile</span></button></div>
       <div id="profileStatus" class="mt-2 text-sm hidden"></div>
     </div>
 
@@ -1394,6 +1395,15 @@
         </table>
       </div>
       <div class="mt-3 flex gap-2 flex-wrap"><button onclick="clearHistory()" class="durable-btn durable-btn-danger btn-sm"><i class="fas fa-trash mr-1"></i> <span id="clearHistoryBtn">Clear History</span></button><button onclick="exportHistory()" class="durable-btn durable-btn-primary btn-sm atom-pulse"><i class="fas fa-file-export mr-1"></i> <span id="exportHistoryBtn">Export History</span></button></div>
+      <div class="mt-4 pt-4 border-t" style="border-color:rgba(13,124,63,0.08);">
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <span class="text-xs font-semibold text-slate-400"><i class="fas fa-smile mr-1"></i> Chat Reaction History</span>
+          <button type="button" class="durable-btn durable-btn-outline btn-sm" onclick="loadChatReactionHistory(false)">Refresh</button>
+        </div>
+        <p class="text-xs text-slate-500 mb-2">New reaction events from chats you belong to are logged from now on. Existing reactions are not backfilled because their event times were not stored. Message text is never included.</p>
+        <div id="chatReactionHistoryList" class="table-wrap text-sm" aria-live="polite">Sign in to chat to view reaction history.</div>
+        <button id="chatReactionHistoryMore" type="button" class="durable-btn durable-btn-outline btn-sm mt-2 hidden" onclick="loadChatReactionHistory(true)">Load older reactions</button>
+      </div>
     </div>
 
   </div>
@@ -1434,7 +1444,7 @@
           sheetsActiveLabel: 'Active Sheets', sheetsUpdateLabel: 'Last Update',
           sheetsRefreshBtn: 'Refresh', sheetsAddBtn: 'Add', sheetsExportBtn: 'Export',
           adminTitle: 'Admin Dashboard 2026', profileTitle: 'My Profile 2026',
-          updateProfileBtn: 'Update Profile', deleteProfileBtn: 'Delete Account',
+          updateProfileBtn: 'Update Profile', deleteProfileBtn: 'Remove Local Profile',
           historyTitle: 'Registration History', clearHistoryBtn: 'Clear History', exportHistoryBtn: 'Export History',
           cartTitle: 'Your Cart', cartEmptyText: 'Your cart is empty.', cartTotalLabel: 'Total:',
           checkoutLabel: 'Proceed to Checkout', paymentLabel: 'Payment Method', payNowLabel: 'Submit Order',
@@ -1458,7 +1468,7 @@
           sheetsUpdateLabel: 'Dernière mise à jour', sheetsRefreshBtn: 'Actualiser',
           sheetsAddBtn: 'Ajouter', sheetsExportBtn: 'Exporter',
           adminTitle: 'Tableau de bord Admin 2026', profileTitle: 'Mon profil 2026',
-          updateProfileBtn: 'Mettre à jour le profil', deleteProfileBtn: 'Supprimer le compte',
+          updateProfileBtn: 'Mettre à jour le profil', deleteProfileBtn: 'Supprimer le profil local',
           historyTitle: 'Historique des inscriptions', clearHistoryBtn: "Effacer l'historique",
           exportHistoryBtn: "Exporter l'historique", cartTitle: 'Votre panier', cartEmptyText: 'Votre panier est vide.',
           cartTotalLabel: 'Total:', checkoutLabel: 'Passer à la caisse', paymentLabel: 'Méthode de paiement',
@@ -1481,7 +1491,7 @@
           sheetsActiveLabel: 'الجداول النشطة', sheetsUpdateLabel: 'آخر تحديث',
           sheetsRefreshBtn: 'تحديث', sheetsAddBtn: 'إضافة', sheetsExportBtn: 'تصدير',
           adminTitle: 'لوحة التحكم 2026', profileTitle: 'ملفي الشخصي 2026',
-          updateProfileBtn: 'تحديث الملف', deleteProfileBtn: 'حذف الحساب',
+          updateProfileBtn: 'تحديث الملف', deleteProfileBtn: 'إزالة الملف الشخصي المحلي',
           historyTitle: 'سجل التسجيل', clearHistoryBtn: 'مسح السجل', exportHistoryBtn: 'تصدير السجل',
           cartTitle: 'سلة التسوق', cartEmptyText: 'سلة التسوق فارغة.', cartTotalLabel: 'المجموع:',
           checkoutLabel: 'إتمام الشراء', paymentLabel: 'طريقة الدفع', payNowLabel: 'إرسال الطلب',
@@ -1505,7 +1515,7 @@
           sheetsUpdateLabel: 'Ibyahinduwe biheruka', sheetsRefreshBtn: 'Vugurura',
           sheetsAddBtn: 'Ongeraho', sheetsExportBtn: 'Sohora',
           adminTitle: 'Ikibaho cy\'ubuyobozi 2026', profileTitle: 'Imikoreshereze yanjye 2026',
-          updateProfileBtn: 'Vugurura imikoreshereze', deleteProfileBtn: 'Siba konti',
+          updateProfileBtn: 'Vugurura imikoreshereze', deleteProfileBtn: 'Kuraho umwirondoro waho',
           historyTitle: 'Amateka yo kwiyandikisha', clearHistoryBtn: 'Siba amateka', exportHistoryBtn: 'Sohora amateka',
           cartTitle: 'Igikapu cyawe', cartEmptyText: 'Igikapu cyawe ni ubusa.', cartTotalLabel: 'Igiteranyo:',
           checkoutLabel: 'Komeza kwishyura', paymentLabel: 'Uburyo bwo kwishyura', payNowLabel: 'Ohereza itumiza',
@@ -1528,7 +1538,7 @@
           sheetsActiveLabel: 'Laha zinazofanya kazi', sheetsUpdateLabel: 'Sasisho la mwisho',
           sheetsRefreshBtn: 'Sasisha', sheetsAddBtn: 'Ongeza', sheetsExportBtn: 'Hamisha',
           adminTitle: 'Dashibodi ya Msimamizi 2026', profileTitle: 'Profaili yangu 2026',
-          updateProfileBtn: 'Sasisha Profaili', deleteProfileBtn: 'Futa Akaunti',
+          updateProfileBtn: 'Sasisha Profaili', deleteProfileBtn: 'Ondoa Wasifu wa Ndani',
           historyTitle: 'Historia ya Usajili', clearHistoryBtn: 'Futa Historia', exportHistoryBtn: 'Hamisha Historia',
           cartTitle: 'Mkoba wako', cartEmptyText: 'Mkoba wako ni tupu.', cartTotalLabel: 'Jumla:',
           checkoutLabel: 'Endelea kulipa', paymentLabel: 'Njia ya malipo', payNowLabel: 'Tuma oda',
@@ -1631,7 +1641,7 @@
         if (els.adminTitle) els.adminTitle.textContent = t.adminTitle || 'Admin Dashboard 2026';
         if (els.profileTitle) els.profileTitle.textContent = t.profileTitle || 'My Profile 2026';
         if (els.updateProfileBtn) els.updateProfileBtn.textContent = t.updateProfileBtn || 'Update Profile';
-        if (els.deleteProfileBtn) els.deleteProfileBtn.textContent = t.deleteProfileBtn || 'Delete Account';
+        if (els.deleteProfileBtn) els.deleteProfileBtn.textContent = t.deleteProfileBtn || 'Remove Local Profile';
         if (els.historyTitle) els.historyTitle.textContent = t.historyTitle || 'Registration History';
         if (els.clearHistoryBtn) els.clearHistoryBtn.textContent = t.clearHistoryBtn || 'Clear History';
         if (els.exportHistoryBtn) els.exportHistoryBtn.textContent = t.exportHistoryBtn || 'Export History';
@@ -1889,6 +1899,8 @@
       let resignId = 1;
       let history = [];
       let historyId = 1;
+      let chatReactionHistoryCursor = '';
+      let chatReactionHistoryLoading = false;
 
       // ============================================================
       // TEAM SYSTEM
@@ -2000,12 +2012,68 @@
       // ============================================================
       function loadUsers() {
         try { const d = localStorage.getItem('pharmacy_users'); if (d) { const p = JSON.parse(d); if (Array.isArray(p) && p
-            .length) { users = p;
-            nextId = Math.max(...users.map(u => u.id), 0) + 1; return true; } } } catch (e) {}
+            .length) { users = p.map(sanitizeLocalUser);
+            nextId = Math.max(...users.map(u => Number(u.id) || 0), 0) + 1;
+            saveUsers();
+            return true; } } } catch (e) {}
         return false;
       }
 
-      function saveUsers() { try { localStorage.setItem('pharmacy_users', JSON.stringify(users)); } catch (e) {} }
+      function sanitizeLocalUser(user) {
+        const profile = Object.assign({}, user);
+        delete profile.password;
+        delete profile.pass;
+        delete profile.pwd;
+        delete profile.passwordHash;
+        return profile;
+      }
+
+      function saveUsers() {
+        users = users.map(sanitizeLocalUser);
+        try { localStorage.setItem('pharmacy_users', JSON.stringify(users)); } catch (e) {}
+      }
+
+      function ensureLocalUser(account) {
+        const email = String(account.email || '').trim().toLowerCase();
+        if (!email) throw new Error('The account service returned no email address.');
+        const displayName = String(account.displayName || account.name || email.split('@')[0]).trim();
+        let profile = users.find(user => String(user.email || '').toLowerCase() === email);
+        if (!profile) {
+          profile = { id: nextId++, email: email, joined: new Date().toISOString().split('T')[0] };
+          users.push(profile);
+        }
+        profile.email = email;
+        profile.name = displayName;
+        profile.status = 'Active';
+        profile.avatar = account.avatarUrl || profile.avatar ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0d7c3f&color=fff&size=60`;
+        saveUsers();
+        return profile;
+      }
+
+      async function sharedAuthRequest(action, body) {
+        const response = await fetch(`/api/chat/auth/${action}`, {
+          method: action === 'me' ? 'GET' : 'POST',
+          credentials: 'same-origin',
+          headers: body ? { 'Content-Type': 'application/json' } : {},
+          body: body ? JSON.stringify(body) : undefined
+        });
+        if (action === 'me' && response.status === 401) return null;
+        if (response.status === 204) return null;
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Unable to reach the account service.');
+        return result;
+      }
+
+      async function restoreSharedAccount() {
+        const result = await sharedAuthRequest('me');
+        if (!result) return false;
+        const profile = ensureLocalUser(Object.assign({}, result.user, { email: result.email }));
+        loginUser(profile, false, true);
+        renderUserList();
+        updateAdminStats();
+        return true;
+      }
 
       function loadResignations() {
         try { const d = localStorage.getItem('pharmacy_resignations'); if (d) { const p = JSON.parse(d); if (Array.isArray(
@@ -2099,6 +2167,79 @@
           }
         }
       }
+
+      async function loadChatReactionHistory(append = false) {
+        const list = document.getElementById('chatReactionHistoryList');
+        const moreButton = document.getElementById('chatReactionHistoryMore');
+        const refreshButton = document.querySelector('#history button[onclick="loadChatReactionHistory(false)"]');
+        if (!list || chatReactionHistoryLoading) return;
+        if (!append) {
+          chatReactionHistoryCursor = '';
+          list.textContent = 'Loading reaction history…';
+          if (moreButton) moreButton.classList.add('hidden');
+        }
+        chatReactionHistoryLoading = true;
+        if (refreshButton) refreshButton.disabled = true;
+        if (moreButton) moreButton.disabled = true;
+        try {
+          const query = append && chatReactionHistoryCursor
+            ? `?before=${encodeURIComponent(chatReactionHistoryCursor)}`
+            : '';
+          const response = await fetch(`/api/chat/reaction-history${query}`, { credentials: 'same-origin' });
+          if (response.status === 401) {
+            list.textContent = 'Sign in to chat to view reaction history. ';
+            if (moreButton) moreButton.classList.add('hidden');
+            const link = document.createElement('a');
+            link.href = '/chat';
+            link.textContent = 'Open chat';
+            list.appendChild(link);
+            return;
+          }
+          const result = await response.json();
+          if (!response.ok) throw new Error(result.error || 'Unable to load reaction history.');
+          if (!append) list.textContent = '';
+          result.events.forEach(event => {
+            const row = document.createElement('div');
+            row.className = 'flex items-center justify-between py-1 px-2 border-b text-xs';
+            row.style.borderColor = 'rgba(13,124,63,0.04)';
+            const action = event.action === 'added'
+              ? `added ${event.emoji}`
+              : event.action === 'changed'
+                ? `changed ${event.previousEmoji} to ${event.emoji}`
+                : `removed ${event.emoji}`;
+            row.textContent = `${new Date(event.createdAt).toLocaleString()} · ${event.conversationTitle} · ${event.userName} ${action}`;
+            list.appendChild(row);
+          });
+          if (!append && !result.events.length) list.textContent = 'No reaction activity yet.';
+          chatReactionHistoryCursor = result.nextCursor || '';
+          if (moreButton) {
+            moreButton.classList.toggle('hidden', !result.hasMore);
+            moreButton.disabled = false;
+          }
+        } catch (error) {
+          if (!append) list.textContent = '';
+          const errorMessage = document.createElement('p');
+          errorMessage.className = 'text-sm text-red-600';
+          errorMessage.textContent = error.message || 'Unable to load reaction history.';
+          list.appendChild(errorMessage);
+        } finally {
+          chatReactionHistoryLoading = false;
+          if (refreshButton) refreshButton.disabled = false;
+          if (moreButton) moreButton.disabled = false;
+        }
+      }
+
+      function clearChatReactionHistory() {
+        chatReactionHistoryCursor = '';
+        const list = document.getElementById('chatReactionHistoryList');
+        const moreButton = document.getElementById('chatReactionHistoryMore');
+        if (list) list.textContent = 'Sign in to chat to view reaction history.';
+        if (moreButton) moreButton.classList.add('hidden');
+      }
+
+      window.addEventListener('focus', function() {
+        if (currentUser) loadChatReactionHistory(false);
+      });
 
       window.clearHistory = function() {
         openDeleteConfirm('Clear History', 'Delete all registration history records?', () => {
@@ -2231,7 +2372,7 @@
         const r = resignations[idx];
         resignations.splice(idx, 1);
         saveResignations();
-        const newUser = { id: nextId++, email: r.email, password: 'restored123', joined: new Date().toISOString().split('T')[0], status: 'Active',
+        const newUser = { id: nextId++, email: r.email, name: r.email.split('@')[0], joined: new Date().toISOString().split('T')[0], status: 'Active',
           avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(r.email)}&background=0d7c3f&color=fff&size=60` };
         users.push(newUser);
         saveUsers();
@@ -2306,10 +2447,11 @@
       // ============================================================
       // LOGIN / LOGOUT with OTP 6-DIGIT
       // ============================================================
-      function loginUser(user, otpVerified = false) {
+      function loginUser(user, otpVerified = false, silent = false) {
         if (twoFactor && !otpVerified) { openOTPModal(user); return; }
         isLoggedIn = true;
         currentUser = user;
+        const displayName = user.name || user.displayName || user.email;
         const avatar = user.avatar ||
           `https://ui-avatars.com/api/?name=${encodeURIComponent(user.email)}&background=0d7c3f&color=fff&size=60`;
         const userAvatar = document.getElementById('userAvatar');
@@ -2317,21 +2459,23 @@
         const mobileAvatar = document.getElementById('mobileUserAvatar');
         if (mobileAvatar) mobileAvatar.src = avatar;
         const userName = document.getElementById('userNameDisplay');
-        if (userName) userName.textContent = user.email;
+        if (userName) userName.textContent = displayName;
         const mobileName = document.getElementById('mobileUserName');
-        if (mobileName) mobileName.textContent = user.email;
+        if (mobileName) mobileName.textContent = displayName;
         const statusDot = document.getElementById('statusDot');
         if (statusDot) statusDot.className = 'status-dot online atom-pulse';
         const successMsg = document.getElementById('authSuccessMsg');
-        if (successMsg) successMsg.classList.remove('hidden');
-        const successText = document.getElementById('authSuccessText');
-        if (successText) successText.textContent = `✅ Welcome back, ${user.email}!`;
-        const successSub = document.getElementById('authSuccessSubtext');
-        if (successSub) successSub.textContent = 'You are now securely logged in.';
+        if (!silent) {
+          if (successMsg) successMsg.classList.remove('hidden');
+          const successText = document.getElementById('authSuccessText');
+          if (successText) successText.textContent = `✅ Welcome back, ${user.email}!`;
+          const successSub = document.getElementById('authSuccessSubtext');
+          if (successSub) successSub.textContent = 'You are now securely logged in.';
+        }
         const logoutBtn = document.getElementById('mobileLogoutBtn');
         if (logoutBtn) logoutBtn.classList.remove('hidden');
         const profileName = document.getElementById('profileNameDisplay');
-        if (profileName) profileName.textContent = user.email;
+        if (profileName) profileName.textContent = displayName;
         const profileEmail = document.getElementById('profileEmailDisplay');
         if (profileEmail) profileEmail.textContent = user.email;
         const displayEmail = document.getElementById('displayEmail');
@@ -2340,14 +2484,18 @@
         if (profileEmailInput) profileEmailInput.value = user.email;
         const profilePhoto = document.getElementById('profilePhoto');
         if (profilePhoto) profilePhoto.src = avatar;
-        showSecurityToast(`🔐 Welcome ${user.email}!`);
-        showSuccessToast(`✅ Login Successful${twoFactor ? ' (2FA)' : ''}`, [{ icon: 'user-check',
-          text: `Welcome, ${user.email}!` }, { icon: 'shield-alt', text: `Security: ${twoFactor ? '2FA Active' : 'Standard'}` }]
-          );
+        if (!silent) {
+          showSecurityToast(`🔐 Welcome ${user.email}!`);
+          showSuccessToast(`✅ Login Successful${twoFactor ? ' (2FA)' : ''}`, [{ icon: 'user-check',
+            text: `Welcome, ${user.email}!` }, { icon: 'shield-alt', text: `Security: ${twoFactor ? '2FA Active' : 'Standard'}` }]);
+        }
         const regOverlay = document.getElementById('regOverlay');
         if (regOverlay) regOverlay.classList.add('hidden');
-        addInbox('system', `🔐 Login: ${user.email}`, `${user.email} logged in.`, 'System');
-        addHistory({ email: user.email, action: 'LOGIN' });
+        if (!silent) {
+          addInbox('system', `🔐 Login: ${user.email}`, `${user.email} logged in.`, 'System');
+          addHistory({ email: user.email, action: 'LOGIN' });
+        }
+        loadChatReactionHistory(false);
       }
 
       function openOTPModal(user) {
@@ -2365,7 +2513,10 @@
               showToast('❌ ' + v.message, 'error');
               openOTPModal(user); }
           },
-          onCancel: function() { showToast('❌ Login cancelled.', 'error'); },
+          onCancel: function() {
+            sharedAuthRequest('logout').catch(error => showToast(error.message, 'error'));
+            showToast('❌ Login cancelled.', 'error');
+          },
           onResend: function() { generateOTP(id);
             showToast(`🔑 New 6-digit OTP sent to ${id}`, 'info'); } });
       }
@@ -2410,7 +2561,7 @@
         ]);
       };
 
-      function confirmLogoutWithOTP() {
+      async function confirmLogoutWithOTP() {
         const input = document.getElementById('logoutOtpInput');
         const entered = input ? input.value.trim() : '';
         const err = document.getElementById('logoutError');
@@ -2421,14 +2572,21 @@
         const v = verifyOTP(logoutOtpId, entered);
         if (!v.valid) { if (err) { err.textContent = '❌ ' + v.message;
             err.classList.remove('hidden'); } return; }
+        try {
+          await sharedAuthRequest('logout');
+        } catch (error) {
+          if (err) { err.textContent = `❌ ${error.message}`; err.classList.remove('hidden'); }
+          return;
+        }
+        clearChatReactionHistory();
         const modal = document.getElementById('logoutModal');
         if (modal) modal.classList.remove('open');
         if (logoutOtpTimer) { clearInterval(logoutOtpTimer);
           logoutOtpTimer = null; }
         addHistory({ email: currentUser.email, action: 'LOGOUT' });
         showSuccessToast('👋 Logging out securely...', [
-          { icon: 'sign-out-alt', text: '6-digit OTP verified. Closing session.' },
-          { icon: 'shield-alt', text: 'Session terminated with 256-bit encryption' }
+          { icon: 'sign-out-alt', text: 'Closing the shared account session.' },
+          { icon: 'shield-alt', text: 'MongoDB session ended.' }
         ]);
         setTimeout(() => {
           isLoggedIn = false;
@@ -2476,21 +2634,27 @@
       // ============================================================
       let isRegLogin = false;
 
-      function handleRegistration() {
+      async function handleRegistration() {
         const email = document.getElementById('regEmail');
         const name = document.getElementById('regName');
         const pwd = document.getElementById('regPassword');
-        const emailVal = email ? email.value.trim() : '';
+        const emailVal = email ? email.value.trim().toLowerCase() : '';
         const nameVal = name ? name.value.trim() : '';
-        const pwdVal = pwd ? pwd.value.trim() : '';
+        const pwdVal = pwd ? pwd.value : '';
         const err = document.getElementById('regError');
         const suc = document.getElementById('regSuccess');
 
         if (isRegLogin) {
-          const user = users.find(u => u.email === emailVal && u.password === pwdVal);
-          if (user) { const overlay = document.getElementById('regOverlay'); if (overlay) overlay.classList.add('hidden');
-            loginUser(user); } else { if (err) { err.textContent = '❌ Invalid credentials.';
-              err.classList.remove('hidden'); } if (suc) suc.classList.add('hidden'); }
+          try {
+            const result = await sharedAuthRequest('login', { email: emailVal, password: pwdVal });
+            const user = ensureLocalUser(Object.assign({}, result.user, { email: emailVal }));
+            const overlay = document.getElementById('regOverlay');
+            if (overlay) overlay.classList.add('hidden');
+            loginUser(user);
+          } catch (error) {
+            if (err) { err.textContent = `❌ ${error.message}`; err.classList.remove('hidden'); }
+            if (suc) suc.classList.add('hidden');
+          }
           return;
         }
 
@@ -2499,44 +2663,21 @@
         if (!isStrongPwd(pwdVal)) { if (err) { err.textContent =
               '❌ Password must be 8+ chars with uppercase, lowercase, number, special.';
             err.classList.remove('hidden'); } if (suc) suc.classList.add('hidden'); return; }
-        if (users.find(u => u.email === emailVal)) { if (err) { err.textContent = '❌ Email already registered.';
-            err.classList.remove('hidden'); } if (suc) suc.classList.add('hidden'); return; }
-
-        const newUser = { id: nextId++, email: emailVal, name: nameVal, password: pwdVal, joined: new Date().toISOString().split('T')[0], status: 'Active',
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(nameVal)}&background=0d7c3f&color=fff&size=60` };
-        users.push(newUser);
-        saveUsers();
-        renderUserList();
-        updateAdminStats();
-
-        addHistory({ email: emailVal, action: 'REGISTERED' });
-
-        addInbox('email', `📝 Welcome to Pharmacy ELAF 2026, ${nameVal}!`,
-          `Dear ${nameVal},\n\nThank you for registering!\n\n📧 Email: ${emailVal}\n👤 Name: ${nameVal}\n\nVisit: www.pharmacyelaf.com\nCall: +250 739 390 715\nWhatsApp: +250 739 390 715 / +250 735 281 339\n\nWelcome to the family! ❤️`,
-          'Pharmacy ELAF <welcome@pharmacyelaf.com>', { recipients: 1 });
-        addInbox('system', `👤 New User: ${nameVal}`, `${nameVal} (${emailVal}) registered.`, 'System');
-
-        if (suc) { suc.textContent = '✅ Account created successfully!';
-          suc.classList.remove('hidden'); }
-        if (err) err.classList.add('hidden');
-        showSuccessToast('🎉 Account Created 2026!', [{ icon: 'user-plus', text: `Welcome, ${nameVal}!` },
-        { icon: 'shield-alt', text: '256-bit encryption enabled' }, { icon: 'check-circle',
-          text: 'Confirmation email sent' }]);
-
-        setTimeout(() => {
-          isRegLogin = true;
-          const submitBtn = document.getElementById('regSubmitBtn');
-          if (submitBtn) submitBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2 atom-pulse"></i> Login';
-          const toggleLogin = document.getElementById('regToggleLogin');
-          if (toggleLogin) toggleLogin.textContent = 'Create an account';
-          const toggleText = document.getElementById('regToggleText');
-          if (toggleText) toggleText.textContent = "Don't have an account?";
-          const subText = document.getElementById('regSubText');
-          if (subText) subText.textContent = 'Login to your account';
-          if (suc) suc.classList.add('hidden');
+        try {
+          const result = await sharedAuthRequest('register', { email: emailVal, fullName: nameVal, password: pwdVal });
+          const user = ensureLocalUser(Object.assign({}, result.user, { email: emailVal }));
+          addHistory({ email: emailVal, action: 'REGISTERED' });
+          renderUserList();
+          updateAdminStats();
+          if (suc) { suc.textContent = '✅ Shared account created successfully!'; suc.classList.remove('hidden'); }
           if (err) err.classList.add('hidden');
-          showToast('📧 Welcome email sent!', 'success');
-        }, 1500);
+          loginUser(user);
+          showSuccessToast('🎉 Pharmacy ELAF account created', [{ icon: 'user-plus', text: `Welcome, ${nameVal}!` },
+            { icon: 'check-circle', text: 'This account also signs in to chat.' }]);
+        } catch (error) {
+          if (err) { err.textContent = `❌ ${error.message}`; err.classList.remove('hidden'); }
+          if (suc) suc.classList.add('hidden');
+        }
       }
 
       // ============================================================
@@ -2545,87 +2686,92 @@
       let isSignup = true;
       let authOtpId = '';
 
-      function handleAuthSubmit() {
+      async function handleAuthSubmit() {
         const contact = document.getElementById('authContact');
         const pwd = document.getElementById('authPassword');
+        const name = document.getElementById('authName');
         const contactVal = contact ? contact.value.trim() : '';
-        const pwdVal = pwd ? pwd.value.trim() : '';
-        const status = document.getElementById('authStatus');
+        const pwdVal = pwd ? pwd.value : '';
+        const nameVal = name ? name.value.trim() : '';
         const successMsg = document.getElementById('authSuccessMsg');
         const otpRow = document.getElementById('otpRow');
 
-        if (!contactVal || contactVal.length < 3) { setAuthStatus('❌ Enter a valid email or username.', 'error'); return; }
-        if (!pwdVal || pwdVal.length < 6) { setAuthStatus('❌ Password must be at least 6 characters.', 'error'); return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactVal)) {
+          setAuthStatus('❌ Enter a valid email address.', 'error');
+          return;
+        }
+        if (!pwdVal || pwdVal.length < 8) { setAuthStatus('❌ Password must be at least 8 characters.', 'error'); return; }
 
         if (isSignup) {
-          if (users.find(u => u.email === contactVal)) { setAuthStatus(
-              '❌ Already registered. Please login.', 'error'); return; }
+          if (!nameVal) { setAuthStatus('❌ Enter your full name.', 'error'); return; }
           if (!isStrongPwd(pwdVal)) { setAuthStatus(
               '❌ Password must be 8+ chars with uppercase, lowercase, number, special.', 'error'); return; }
-          const newUser = { id: nextId++, email: contactVal.includes('@') ? contactVal : contactVal +
-              '@email.com', name: contactVal, password: pwdVal, joined: new Date().toISOString().split('T')[0], status: 'Active',
-            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(contactVal)}&background=0d7c3f&color=fff&size=60` };
-          users.push(newUser);
-          saveUsers();
+          try {
+            const result = await sharedAuthRequest('register', {
+              email: contactVal,
+              fullName: nameVal,
+              password: pwdVal
+            });
+            const user = ensureLocalUser(Object.assign({}, result.user, { email: contactVal }));
+            addHistory({ email: contactVal, action: 'REGISTERED' });
+            renderUserList();
+            updateAdminStats();
+            if (successMsg) successMsg.classList.remove('hidden');
+            const successText = document.getElementById('authSuccessText');
+            if (successText) successText.textContent = '✅ Shared account created successfully!';
+            const successSub = document.getElementById('authSuccessSubtext');
+            if (successSub) successSub.textContent = 'The same account signs in to Pharmacy ELAF and chat.';
+            setAuthStatus('🎉 Account created and signed in.', 'success');
+            loginUser(user);
+          } catch (error) {
+            setAuthStatus(`❌ ${error.message}`, 'error');
+          }
+          return;
+        }
+
+        try {
+          const result = await sharedAuthRequest('login', { email: contactVal, password: pwdVal });
+          const user = ensureLocalUser(Object.assign({}, result.user, { email: contactVal }));
           renderUserList();
           updateAdminStats();
-          addHistory({ email: newUser.email, action: 'REGISTERED' });
-          addInbox('email', `📝 Welcome ${contactVal}!`,
-            `Dear ${contactVal},\n\nThank you for registering!\n\n📧 Email: ${newUser.email}\n👤 Name: ${contactVal}\n\nVisit: www.pharmacyelaf.com\nWhatsApp: +250 739 390 715 / +250 735 281 339`,
-            'Pharmacy ELAF <welcome@pharmacyelaf.com>');
-          addInbox('system', `👤 New User: ${contactVal}`, `${contactVal} (${newUser.email}) registered.`, 'System');
-          if (successMsg) successMsg.classList.remove('hidden');
-          const successText = document.getElementById('authSuccessText');
-          if (successText) successText.innerHTML =
-            '✅ Account Created 2026! <span style="font-size:1.2rem;" class="atom-float">🎉</span>';
-          const successSub = document.getElementById('authSuccessSubtext');
-          if (successSub) successSub.textContent = 'Account secured. Please log in.';
-          setAuthStatus('🎉 Account created! Please login.', 'success');
-          setTimeout(() => { updateAuthMode(false);
-            if (pwd) pwd.value = '';
-            if (contact) contact.value = '';
-            if (successMsg) successMsg.classList.add('hidden');
-            showToast('📧 Welcome email sent!', 'success'); }, 2000);
-        } else {
-          const user = users.find(u => u.email === contactVal && u.password === pwdVal);
-          if (user) {
-            if (twoFactor) {
-              authOtpId = user.email;
-              generateOTP(authOtpId);
-              if (otpRow) otpRow.classList.remove('hidden');
-              const otpInput = document.getElementById('authOtp');
-              if (otpInput) otpInput.value = '';
-              if (otpInput) otpInput.focus();
-              setAuthStatus(`🔑 6-digit OTP sent to ${authOtpId}.`, 'info');
-              const submitBtn = document.getElementById('authSubmitBtn');
-              if (submitBtn) submitBtn.textContent = 'Verify OTP';
-              window._pendingAuthUser = user;
-              const timerEl = document.getElementById('authOtpTimer');
-              let timer = 300;
+          if (twoFactor) {
+            authOtpId = user.email;
+            generateOTP(authOtpId);
+            if (otpRow) otpRow.classList.remove('hidden');
+            const otpInput = document.getElementById('authOtp');
+            if (otpInput) { otpInput.value = ''; otpInput.focus(); }
+            setAuthStatus('Enter the local verification code. Email/SMS delivery is not configured.', 'info');
+            const submitBtn = document.getElementById('authSubmitBtn');
+            if (submitBtn) submitBtn.textContent = 'Verify OTP';
+            window._pendingAuthUser = user;
+            const timerEl = document.getElementById('authOtpTimer');
+            let timer = 300;
+            if (timerEl) timerEl.textContent = `(${timer}s)`;
+            const interval = setInterval(() => {
+              timer--;
               if (timerEl) timerEl.textContent = `(${timer}s)`;
-              const interval = setInterval(() => { timer--;
-                if (timerEl) timerEl.textContent = `(${timer}s)`; if (timer <= 0) { clearInterval(interval);
-                  if (timerEl) { timerEl.textContent = '(expired)';
-                    timerEl.className = 'otp-timer expired'; }
-                  if (otpRow) otpRow.classList.add('hidden');
-                  if (submitBtn) submitBtn.textContent = 'Log in';
-                  setAuthStatus('OTP expired. Try again.', 'error');
-                  delete window._pendingAuthUser; } }, 1000);
-              return;
-            } else {
-              loginUser(user);
-              addInbox('system', `🔐 Login: ${user.email}`, `${user.email} logged in.`, 'System');
-              if (successMsg) successMsg.classList.remove('hidden');
-              const successText = document.getElementById('authSuccessText');
-              if (successText) successText.innerHTML =
-                '✅ Login Successful! <span style="font-size:1.2rem;" class="atom-float">👋</span>';
-              const successSub = document.getElementById('authSuccessSubtext');
-              if (successSub) successSub.textContent = `Welcome back, ${user.email}!`;
-              setAuthStatus('✅ Welcome back!', 'success');
-              setTimeout(() => { if (successMsg) successMsg.classList.add('hidden'); }, 3000);
-              showSecurityToast(`Welcome back, ${user.email}!`);
-            }
-          } else { setAuthStatus('❌ Invalid credentials.', 'error'); }
+              if (timer <= 0) {
+                clearInterval(interval);
+                if (timerEl) { timerEl.textContent = '(expired)'; timerEl.className = 'otp-timer expired'; }
+                if (otpRow) otpRow.classList.add('hidden');
+                if (submitBtn) submitBtn.textContent = 'Log in';
+                delete window._pendingAuthUser;
+                sharedAuthRequest('logout').catch(error => showToast(error.message, 'error'));
+                setAuthStatus('OTP expired. Sign in again.', 'error');
+              }
+            }, 1000);
+          } else {
+            loginUser(user);
+            if (successMsg) successMsg.classList.remove('hidden');
+            const successText = document.getElementById('authSuccessText');
+            if (successText) successText.textContent = `✅ Welcome back, ${user.email}!`;
+            const successSub = document.getElementById('authSuccessSubtext');
+            if (successSub) successSub.textContent = 'You are signed in to Pharmacy ELAF and chat.';
+            setAuthStatus('✅ Welcome back!', 'success');
+            setTimeout(() => { if (successMsg) successMsg.classList.add('hidden'); }, 3000);
+          }
+        } catch (error) {
+          setAuthStatus(`❌ ${error.message}`, 'error');
         }
       }
 
@@ -2643,6 +2789,12 @@
       }
 
       function updateAuthMode(signup) {
+        if (window._pendingAuthUser) {
+          delete window._pendingAuthUser;
+          sharedAuthRequest('logout').catch(error => showToast(error.message, 'error'));
+        }
+        const otpRow = document.getElementById('otpRow');
+        if (otpRow) otpRow.classList.add('hidden');
         isSignup = signup;
         const title = document.getElementById('authTitle');
         const switchText = document.getElementById('authSwitchText');
@@ -2650,6 +2802,8 @@
         const loginTab = document.getElementById('loginTab');
         const signupTab = document.getElementById('signupTab');
         const submitText = document.getElementById('authSubmitText');
+        const nameField = document.getElementById('authNameField');
+        if (nameField) nameField.classList.toggle('hidden', !signup);
 
         if (signup) { if (title) title.textContent = 'Register 2026';
           if (submitText) submitText.textContent = 'Create account';
@@ -3541,25 +3695,19 @@
       window.updateProfile = function() {
         const email = document.getElementById('profileEmailInput');
         const memberSince = document.getElementById('profileMemberSince');
-        const emailVal = email ? email.value.trim() : '';
+        const emailVal = currentUser ? currentUser.email : '';
         const memberVal = memberSince ? memberSince.value.trim() : '';
-        if (!emailVal) { const st = document.getElementById('profileStatus'); if (st) { st.textContent =
-              '❌ Please fill in all fields.';
+        if (!currentUser) { const st = document.getElementById('profileStatus'); if (st) { st.textContent =
+              '❌ Sign in to update your profile.';
             st.className = 'mt-2 text-sm text-red-600 atom-pulse';
             st.classList.remove('hidden'); } return; }
+        if (email) email.value = emailVal;
         const profileEmail = document.getElementById('profileEmailDisplay');
         if (profileEmail) profileEmail.textContent = emailVal;
         const displayEmail = document.getElementById('displayEmail');
         if (displayEmail) displayEmail.textContent = emailVal;
         if (memberVal) { const displaySince = document.getElementById('displayMemberSince'); if (displaySince) displaySince
             .textContent = memberVal; }
-        if (currentUser) { currentUser.email = emailVal;
-          const u = users.find(x => x.id === currentUser.id); if (u) { u.email = emailVal;
-            saveUsers(); }
-          const userName = document.getElementById('userNameDisplay');
-          if (userName) userName.textContent = emailVal;
-          const mobileName = document.getElementById('mobileUserName');
-          if (mobileName) mobileName.textContent = emailVal; }
         const st = document.getElementById('profileStatus');
         if (st) { st.textContent = '✅ Profile updated successfully!';
           st.className = 'mt-2 text-sm text-emerald-600 atom-pulse';
@@ -3572,7 +3720,7 @@
 
       window.deleteProfile = function() {
         if (!currentUser) { showToast('❌ Not logged in.', 'error'); return; }
-        openDeleteConfirm('Delete Account', 'Are you sure you want to delete your account?', () => {
+        openDeleteConfirm('Remove Local Profile', 'This removes the browser-side profile only. Your shared MongoDB account and chats are not deleted.', () => {
           const id = currentUser.id;
           const user = users.find(u => u.id === id);
           users = users.filter(u => u.id !== id);
@@ -3580,9 +3728,9 @@
           renderUserList();
           updateAdminStats();
           if (user) addHistory({ email: user.email, action: 'ACCOUNT_DELETED' });
-          addInbox('system', '🗑️ Account Deleted', `${currentUser.email} deleted their account.`, 'System');
+          addInbox('system', '🗑️ Local Profile Removed', `${currentUser.email} removed this browser profile.`, 'System');
           logoutUser();
-          showSuccessToast('🗑️ Account Deleted', [{ icon: 'trash atom-pulse', text: 'Account removed' }]);
+          showSuccessToast('🗑️ Local Profile Removed', [{ icon: 'trash atom-pulse', text: 'Only this browser profile was removed.' }]);
         });
       };
 
@@ -3755,8 +3903,10 @@
       window.navigateTo = navigateTo;
 
       document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', function(e) { e.preventDefault(); const target = this.getAttribute(
-            'href'); if (target) navigateTo(target);
+        link.addEventListener('click', function(e) { const target = this.getAttribute('href');
+          if (!target || !target.startsWith('#')) return;
+          e.preventDefault();
+          navigateTo(target);
           document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
           this.classList.add('active'); });
       });
@@ -3967,7 +4117,7 @@
             if (!user) { setAuthStatus('❌ Session expired.', 'error'); return; }
             const id = user.email;
             const v = verifyOTP(id, otpVal);
-            if (v.valid) { loginUser(user);
+            if (v.valid) { loginUser(user, true);
               addInbox('system', `🔐 Login: ${user.email} (OTP)`, `${user.email} logged in with 6-digit OTP.`,
                 'System');
               if (otpRow) otpRow.classList.add('hidden');
@@ -4002,48 +4152,21 @@
       }
       const otpBtn = document.getElementById('otpBtn');
       if (otpBtn) {
-        otpBtn.addEventListener('click', function() { const row = document.getElementById('otpRow'); if (row) row
-            .classList.toggle('hidden');
-          setAuthStatus('6-digit OTP entry enabled. Enter the code sent to your device.', 'info'); });
+        otpBtn.addEventListener('click', function() {
+          setAuthStatus('OTP delivery is not configured. Sign in with your email and password.', 'info');
+        });
       }
       const authSendOtpBtn = document.getElementById('authSendOtpBtn');
       if (authSendOtpBtn) {
-        authSendOtpBtn.addEventListener('click', function() {
-          const contact = document.getElementById('authContact');
-          const contactVal = contact ? contact.value.trim() : '';
-          if (!contactVal) { setAuthStatus('❌ Enter email first.', 'error'); return; }
-          const user = users.find(u => u.email === contactVal);
-          if (!user) { setAuthStatus('❌ No user found.', 'error'); return; }
-          authOtpId = user.email;
-          generateOTP(authOtpId);
-          setAuthStatus(`🔑 6-digit OTP sent to ${authOtpId}.`, 'info');
+        authSendOtpBtn.addEventListener('click', function(event) {
+          event.preventDefault();
+          setAuthStatus('OTP delivery is not configured. Sign in with your email and password.', 'info');
         });
       }
       const forgotPwdLink = document.getElementById('forgotPwdLink');
       if (forgotPwdLink) {
         forgotPwdLink.addEventListener('click', function() {
-          const contact = document.getElementById('authContact');
-          const contactVal = contact ? contact.value.trim() : '';
-          if (!contactVal) { setAuthStatus('❌ Enter email.', 'error'); return; }
-          const user = users.find(u => u.email === contactVal);
-          if (!user) { setAuthStatus('❌ No user found.', 'error'); return; }
-          generateOTP(user.email);
-          setAuthStatus(`📧 Password reset 6-digit OTP sent to ${user.email}.`, 'info');
-          openModal({ icon: '🔑', title: 'Reset Password 2026', message: `Enter 6-digit OTP sent to ${user.email} and new password.`,
-            fields: [{ key: 'otp', label: '6-Digit OTP Code', placeholder: 'Enter OTP' }, { key: 'newPwd',
-              label: 'New Password', type: 'password', placeholder: 'Min 8 chars, uppercase, lowercase, number, special'
-              }],
-            onConfirm: function(data) {
-              const v = verifyOTP(user.email, data.otp);
-              if (!v.valid) { showToast('❌ ' + v.message, 'error'); return; }
-              if (!isStrongPwd(data.newPwd)) { showToast(
-                  '❌ Password must be 8+ chars with uppercase, lowercase, number, special.', 'error'); return; }
-              const u = users.find(x => x.id === user.id); if (u) { u.password = data.newPwd;
-                saveUsers();
-                showSuccessToast('✅ Password Reset 2026!', [{ icon: 'check-circle atom-pulse',
-                  text: 'Password updated securely' }]);
-                addInbox('system', '🔑 Password Reset', `${user.email} reset password.`, 'System'); }
-            } });
+          setAuthStatus('Password reset is not configured. Contact the Pharmacy ELAF administrator for help.', 'info');
         });
       }
 
@@ -4217,32 +4340,12 @@
         updateAdminStats();
         renderSheets();
 
-        if (users.length === 0) {
-          const defaults = [{ email: 'john@example.com', name: 'John Doe', password: 'John@123', joined: '2024-01-15' },
-            { email: 'jane@example.com', name: 'Jane Smith', password: 'Jane@123', joined: '2024-01-20' },
-            { email: 'ahmed@pharmacy.com', name: 'Dr. Ahmed', password: 'Ahmed@123', joined: '2024-01-10' },
-            { email: 'marie@pharmacy.com', name: 'Marie Claire', password: 'Marie@123', joined: '2024-02-01' }
-          ];
-          defaults.forEach(u => {
-            const nu = { id: nextId++, ...u, status: 'Active',
-              avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=0d7c3f&color=fff&size=60` };
-            users.push(nu);
-            addHistory({ email: u.email, action: 'REGISTERED' });
-            addInbox('email', `📝 Welcome ${u.name}!`,
-              `Dear ${u.name},\n\nWelcome to Pharmacy ELAF 2026!\n\n📧 Email: ${u.email}\n👤 Name: ${u.name}\n\nWhatsApp: +250 739 390 715 / +250 735 281 339\n\nWe're here for your health! ❤️`,
-              'Pharmacy ELAF <welcome@pharmacyelaf.com>');
-          });
-          saveUsers();
-          renderUserList();
-          updateAdminStats();
-        }
-
         if (inbox.length === 0) {
           addInbox('system', '🚀 Welcome to Pharmacy ELAF 2026!',
-            'Your pharmacy management system is ready.\n\n✅ Register users with email & name\n🛒 Manage products\n📱 SMS & communications\n🚫 Resignation management\n📄 Google Sheets integrated\n👥 Team management\n🔐 6-Digit OTP Secure Logout with Copy\n📋 Registration History\n🌍 Multi-language support (EN, FR, AR, RW, SW)\n🌓 Light/Dark theme\n📱 WhatsApp: +250 739 390 715 / +250 735 281 339\n📸 Profile Photo Upload with Camera\n⚛️ Atoms & Durations animations enabled\n🔲 QR Code: Generate, Download, WhatsApp, Print\n\nStart by creating your first account!',
+            'Your pharmacy management system is ready.\n\n✅ Create or sign in with a shared MongoDB account\n🛒 Manage products\n📱 SMS & communications\n🚫 Resignation management\n📄 Google Sheets sync requires configuration\n👥 Team management\n🔐 Account sign-out\n📋 Registration History\n🌍 Multi-language support (EN, FR, AR, RW, SW)\n🌓 Light/Dark theme\n📱 WhatsApp: +250 739 390 715 / +250 735 281 339\n📸 Profile Photo Upload with Camera\n⚛️ Atoms & Durations animations enabled\n🔲 QR Code: Generate, Download, WhatsApp, Print\n\nStart by creating your first account!',
             'System');
           addInbox('email', '📧 Pharmacy ELAF — System Ready 2026',
-            'Dear Admin,\n\nYour system is online.\n\n🔑 Admin: admin / admin123 + 6-digit OTP\n📱 SMS: +250 739 390 715\n📧 Email: salimabdu759@gmail.com\n📄 Google Sheets: Connected\n👥 Team: Manage your staff\n🔐 Logout: 6-digit OTP protected with copy\n📋 History: All registrations logged\n🌍 Languages: EN, FR, AR, RW, SW\n🌓 Theme: Light/Dark toggle\n📱 WhatsApp: +250 739 390 715 / +250 735 281 339\n📸 Profile: Photo upload & camera capture\n⚛️ Atoms: pulse, float, spin, bounce, glow\n🔧 Durables: glass, cards, badges, buttons\n🔲 QR: Generate, Clear, Download PNG, WhatsApp Share, Print\n\n— Pharmacy ELAF Team 2026',
+            'Dear Pharmacy ELAF user,\n\nSign in or register with your MongoDB account to use both Pharmacy ELAF and chat. No default administrator credentials are provided.\n\n📄 Google Sheets sync must be configured by an administrator.\n👥 Team, product, order, and dashboard data remain stored in this browser.\n\n— Pharmacy ELAF Team',
             'Pharmacy ELAF <system@pharmacyelaf.com>');
         }
 
@@ -4253,8 +4356,19 @@
         showToast('⚕️ Pharmacy ELAF 2026 System ready!', 'success');
         showSecurityToast('🔐 Secure connection established');
 
-        setTimeout(() => { const overlay = document.getElementById('regOverlay'); if (overlay) overlay.classList.remove(
-            'hidden'); }, 500);
+        restoreSharedAccount().then(restored => {
+          if (!restored) {
+            setTimeout(() => {
+              const overlay = document.getElementById('regOverlay');
+              if (overlay) overlay.classList.remove('hidden');
+            }, 200);
+          }
+        }).catch(error => {
+          console.error('Unable to restore the shared Pharmacy ELAF account:', error);
+          showToast(`Account service unavailable: ${error.message}`, 'error');
+          const overlay = document.getElementById('regOverlay');
+          if (overlay) overlay.classList.remove('hidden');
+        });
 
         console.log(
           `✅ Pharmacy ELAF 2026 loaded: ${products.length} products, ${users.length} users, ${resignations.length} resignations, ${teamMembers.length} team members, ${history.length} history records`
@@ -4272,6 +4386,7 @@
       window.showToast = showToast;
       window.showSuccessToast = showSuccessToast;
       window.logoutUser = initiateLogout;
+      window.loadChatReactionHistory = loadChatReactionHistory;
       window.openLogoutModal = openLogoutModal;
       window.closeLogoutModal = closeLogoutModal;
       window.confirmLogout = confirmLogoutWithOTP;
@@ -4403,7 +4518,7 @@ D.addEventListener('click',function(e){
   case'svCheck':runCheck();break;
   case'addRec':var n=prompt(t('promptNote'));if(n&&n.trim()){log('record',n.trim());ok(t('recAdded'),[n.trim()]);render()}break;
   case'exAll':var all={};Object.keys(localStorage).filter(function(k){return k.indexOf('pharmacy_')===0&&k.indexOf('otp')<0}).forEach(function(k){try{all[k]=JSON.parse(localStorage.getItem(k))}catch(x){}});
-   if(all.pharmacy_users)all.pharmacy_users=all.pharmacy_users.map(function(u){var c=Object.assign({},u);delete c.password;delete c.pass;delete c.pwd;return c});
+   if(all.pharmacy_users)all.pharmacy_users=all.pharmacy_users.map(function(u){var c=Object.assign({},u);delete c.password;delete c.pass;delete c.pwd;delete c.passwordHash;return c});
    dl('pharmacy-elaf-records.json',all);log('export',t('exported'));ok(t('exported'),[]);render();break;
   case'hsExport':if(window.exportHistory)window.exportHistory();else dl('history.json',rd('pharmacy_history'));log('export',t('exportH'));setTimeout(render,300);break;
   case'hsClear':if(window.clearHistory)window.clearHistory();setTimeout(render,600);break;

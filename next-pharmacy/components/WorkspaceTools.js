@@ -241,6 +241,113 @@ export function QrPanel() {
   );
 }
 
+function ReactionHistoryPanel() {
+  const [events, setEvents] = useState([]);
+  const [cursor, setCursor] = useState("");
+  const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [needsSignIn, setNeedsSignIn] = useState(false);
+  const [error, setError] = useState("");
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+    async function loadFirstPage() {
+      setLoading(true);
+      setError("");
+      setNeedsSignIn(false);
+      try {
+        const response = await fetch("/api/chat/reaction-history", { credentials: "same-origin" });
+        if (response.status === 401) {
+          if (active) {
+            setEvents([]);
+            setCursor("");
+            setHasMore(false);
+            setNeedsSignIn(true);
+          }
+          return;
+        }
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Unable to load chat reaction history.");
+        if (active) {
+          setEvents(result.events);
+          setCursor(result.nextCursor || "");
+          setHasMore(Boolean(result.hasMore));
+        }
+      } catch (loadError) {
+        if (active) setError(loadError.message || "Unable to load chat reaction history.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    loadFirstPage();
+    return () => { active = false; };
+  }, [refreshKey]);
+
+  useEffect(() => {
+    const refresh = () => setRefreshKey((key) => key + 1);
+    window.addEventListener("focus", refresh);
+    return () => window.removeEventListener("focus", refresh);
+  }, []);
+
+  async function loadMore() {
+    if (!cursor || loadingMore) return;
+    setLoadingMore(true);
+    setError("");
+    try {
+      const response = await fetch(`/api/chat/reaction-history?before=${encodeURIComponent(cursor)}`, { credentials: "same-origin" });
+      if (response.status === 401) {
+        setNeedsSignIn(true);
+        setEvents([]);
+        setCursor("");
+        setHasMore(false);
+        return;
+      }
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Unable to load more reaction history.");
+      setEvents((current) => [...current, ...result.events]);
+      setCursor(result.nextCursor || "");
+      setHasMore(Boolean(result.hasMore));
+    } catch (loadError) {
+      setError(loadError.message || "Unable to load more reaction history.");
+    } finally {
+      setLoadingMore(false);
+    }
+  }
+
+  return (
+    <div className="panel dashboard-orders">
+      <div className="panel-heading">
+        <div><span className="eyebrow">CHAT ACTIVITY</span><h2>Reaction history</h2></div>
+        <button className="button button-secondary" type="button" onClick={() => setRefreshKey((key) => key + 1)} disabled={loading}>
+          {loading ? "Loading…" : "Refresh"}
+        </button>
+      </div>
+      <p className="empty-note">New reaction events from chats you belong to are logged from now on. Existing reactions are not backfilled because their event times were not stored. Message text is never included.</p>
+      {needsSignIn && <p className="empty-note">Sign in to chat to view this history. <a href="/chat">Open chat</a></p>}
+      {error && <p className="empty-note" role="alert">{error}</p>}
+      {events.length > 0 && (
+        <div className="table-scroll">
+          <table>
+            <thead><tr><th>Time</th><th>Conversation</th><th>Member</th><th>Reaction activity</th></tr></thead>
+            <tbody>{events.map((event) => (
+              <tr key={event.id}>
+                <td>{new Date(event.createdAt).toLocaleString()}</td>
+                <td>{event.conversationTitle}</td>
+                <td>{event.userName}</td>
+                <td>{event.action === "added" ? "Added" : event.action === "changed" ? `Changed ${event.previousEmoji} to` : "Removed"} {event.emoji}</td>
+              </tr>
+            ))}</tbody>
+          </table>
+        </div>
+      )}
+      {!loading && !needsSignIn && !error && events.length === 0 && <p className="empty-note">No reaction activity yet.</p>}
+      {hasMore && <button className="button button-secondary" type="button" onClick={loadMore} disabled={loading || loadingMore}>{loadingMore ? "Loading…" : "Load older reactions"}</button>}
+    </div>
+  );
+}
+
 export function HistoryPanel({ orders }) {
   return (
     <section className="workspace-section" id="history">
@@ -251,6 +358,7 @@ export function HistoryPanel({ orders }) {
             <td>{order.items.map((item) => `${item.name} × ${item.quantity}`).join(", ")}</td><td>{order.paymentMethod}</td><td>${Number(order.total).toFixed(2)}</td></tr>)}</tbody></table></div>
           : <p className="empty-note">No orders have been submitted from this browser.</p>}
       </div>
+      <ReactionHistoryPanel />
     </section>
   );
 }
